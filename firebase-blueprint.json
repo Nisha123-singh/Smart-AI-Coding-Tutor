@@ -1,0 +1,65 @@
+{
+  "entities": {
+    "UserProgress": {
+      "title": "UserProgress",
+      "description": "Stores an authenticated learner's lesson completions, quiz answers, Code Lab runs, AI Tutor question count, and last visited language.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Authenticated Firebase UID of the learner."
+        },
+        "completedLessons": {
+          "type": "array",
+          "description": "List of completed tutorial lesson IDs (max 50)."
+        },
+        "quizAnswers": {
+          "type": "object",
+          "description": "Map of quiz question ID to selected option index (max 50 entries)."
+        },
+        "codeRuns": {
+          "type": "integer",
+          "description": "Total number of Code Lab runs by the learner."
+        },
+        "tutorQuestions": {
+          "type": "integer",
+          "description": "Total number of AI Tutor questions asked by the learner."
+        },
+        "lastVisitedLanguage": {
+          "type": "string",
+          "enum": ["python", "java", "cpp", "sql"],
+          "description": "Last selected programming language track."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the progress document was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the progress document was last updated."
+        }
+      },
+      "required": [
+        "userId",
+        "completedLessons",
+        "quizAnswers",
+        "codeRuns",
+        "tutorQuestions",
+        "lastVisitedLanguage",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/userProgress/{userId}": {
+      "schema": "UserProgress",
+      "description": "Owner-only learning progress document keyed by the user's Firebase Auth UID."
+    }
+  }
+}

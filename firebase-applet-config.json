@@ -1,0 +1,12 @@
+{
+  "projectId": "smart-ai-coding-tutor",
+  "appId": "1:125202766316:web:dd83d36142031b3e5a88c9",
+  "apiKey": "AIzaSyCV_UYoX61eMvdBmdWDDe9C1cUTA0dtts0",
+  "authDomain": "smart-ai-coding-tutor.firebaseapp.com",
+  "firestoreDatabaseId": "ai-studio-smartaicodingtut-64224cfe-08b9-45bd-ba2a-20afc80a96e8",
+  "storageBucket": "smart-ai-coding-tutor.firebasestorage.app",
+  "messagingSenderId": "125202766316",
+  "measurementId": "",
+  "oAuthClientId": "125202766316-lhi1tslssuqvh7brpp1j2fd1fdasv8rb.apps.googleusercontent.com",
+  "recaptchaSiteKey": ""
+}

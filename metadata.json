@@ -1,0 +1,6 @@
+{
+  "name": "Smart AI Coding Tutor",
+  "description": "An interactive beginner-friendly coding platform featuring Python, Java, C++, and SQL tutorials, language theory, an AI Tutor chatbot, a live Code Lab, Practice quizzes, and a Learning Progress Dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

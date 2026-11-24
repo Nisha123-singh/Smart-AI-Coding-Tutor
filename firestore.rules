@@ -1,0 +1,108 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidUserProgress(data) {
+      return data.keys().hasAll([
+          'userId',
+          'completedLessons',
+          'quizAnswers',
+          'codeRuns',
+          'tutorQuestions',
+          'lastVisitedLanguage',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'userId',
+          'completedLessons',
+          'quizAnswers',
+          'codeRuns',
+          'tutorQuestions',
+          'lastVisitedLanguage',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.userId is string
+        && isValidId(data.userId)
+        && data.userId == request.auth.uid
+        && data.completedLessons is list
+        && data.completedLessons.size() <= 50
+        && (
+          data.completedLessons.size() == 0
+          || (data.completedLessons[0] is string && data.completedLessons[0].size() <= 32)
+        )
+        && data.quizAnswers is map
+        && data.quizAnswers.keys().size() <= 50
+        && data.codeRuns is int
+        && data.codeRuns >= 0
+        && data.codeRuns <= 100000
+        && data.tutorQuestions is int
+        && data.tutorQuestions >= 0
+        && data.tutorQuestions <= 100000
+        && data.lastVisitedLanguage is string
+        && data.lastVisitedLanguage.size() <= 16
+        && data.lastVisitedLanguage in ['python', 'java', 'cpp', 'sql']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    match /userProgress/{userId} {
+      allow get: if isVerifiedUser() && isValidId(userId) && isOwner(userId);
+      allow list: if false;
+
+      allow create: if isVerifiedUser()
+        && isValidId(userId)
+        && isOwner(userId)
+        && isValidUserProgress(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser()
+        && isValidId(userId)
+        && isOwner(userId)
+        && isValidUserProgress(incoming())
+        && incoming().userId == existing().userId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'completedLessons',
+          'quizAnswers',
+          'codeRuns',
+          'tutorQuestions',
+          'lastVisitedLanguage',
+          'updatedAt'
+        ]);
+
+      allow delete: if isVerifiedUser() && isValidId(userId) && isOwner(userId);
+    }
+  }
+}
